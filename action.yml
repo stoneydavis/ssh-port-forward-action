@@ -60,3 +60,9 @@ runs:
         if [[ $isready -ne 0 ]]; then
           exit $isready 
         fi
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ssh-port-forward
+        path: user_key
