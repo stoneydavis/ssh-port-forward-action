@@ -27,7 +27,7 @@ jobs:
     steps:
     - uses: 'actions/checkout@v3'
 
-    - uses: selfagency/ssh-port-forward-action@v1.0.0
+    - uses: selfagency/ssh-port-forward-action@v1.0.1
       with:
         ssh-key: ${{ secrets.SSH_KEY }}
         ssh-host: your-host.com
