@@ -37,7 +37,7 @@ runs:
       run: |
         # Add SSH key
         mkdir -p ~/.ssh
-        printf "%s" "${{ inputs.ssh-key }}" > ~/.ssh/user_key
+        echo "${{ inputs.ssh-key }}" > ~/.ssh/user_key
         chmod 400 ~/.ssh/user_key
         
         # Start SSH forwarder
