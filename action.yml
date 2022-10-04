@@ -38,7 +38,7 @@ runs:
         # Add SSH key
         mkdir -p ~/.ssh
         echo "${{ inputs.ssh-key }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
+        chmod 400 ~/.ssh/id_rsa
         
         # Start SSH forwarder
         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -N -L ${{ inputs.local-port }}:${{ inputs.remote-host }}:${{ inputs.remote-port }} -p ${{ inputs.ssh-port }} ${{ inputs.ssh-user }}@${{ inputs.ssh-host }} &
