@@ -36,14 +36,9 @@ runs:
       shell: bash
       run: |
         # Add SSH key
-        printf "%s" "${{ inputs.ssh-key }}" | tee user_key
-        # chmod 400 user_key
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ssh-port-forward
-        path: user_key
+        echo "${{ inputs.ssh-key }}" | tee user_key
+        ssh-keygen -l -f user_key
+        chmod 400 user_key
 
     - name: Start SSH port forwarding
       shell: bash
