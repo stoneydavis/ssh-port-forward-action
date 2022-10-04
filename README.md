@@ -1,52 +1,42 @@
-# Google Cloud SQL Proxy
+# SSH port forwarding action
 
-Github action which will start a [Google Cloud SQL Proxy](https://cloud.google.com/sql/docs/postgres/sql-proxy). 
+GitHub action to forward a remote connection to a local port over SSH. 
 
 ## Prerequisites
 
-Set up the following resources manually in the Cloud Console 
-or use a tool like [Terraform](https://www.terraform.io).
-
-- Running Cloud SQL instance with a public IP address
-- Create Service Account with Role `Cloud SQL Client` and do authentication via:
-  - [Workload Identity Federation](https://github.com/google-github-actions/auth#with-workload-identity-federation) 
-  - ~~[Long-lived Service Account Key JSON credential](https://github.com/google-github-actions/auth#authenticating-via-service-account-key-json)~~  ***Deprecated***
+You must have a passwordless SSH key set up on the remote server.
 
 
 ## Github Action Inputs
 
-| Variable                         | Description                                                                 |
-|----------------------------------|-----------------------------------------------------------------------------|
-| `creds`                          | Automatically exported as a short-lived Service Account JSON Key            |
-| `instance`                       | ***Required*** Cloud SQL connection name                                    |
-| `port`                           | Listen on port, default 5432                                                |
-| `version`                        | Cloud SQL Proxy version, default latest                                     |
-
+| Variable      | Description     |
+|---------------|-----------------|
+| `ssh-key`     | SSH private key |
+| `ssh-host`    | SSH host        |
+| `ssh-port`    | SSH port        |
+| `ssh-user`    | SSH user        |
+| `local-port`  | Local port      |
+| `remote-host` | Remote host     |
+| `remote-port` | Remote port     |
 
 ## Example Usage
 
 ```
 jobs:
   job_id:
-    # ...
-
-    # Add "id-token" with the intended permissions.
-    permissions:
-      contents: 'read'
-      id-token: 'write'
-
     steps:
     - uses: 'actions/checkout@v3'
 
-    - id: 'auth'
-      name: 'Authenticate to Google Cloud'
-      uses: 'google-github-actions/auth@v0'
+    - uses: selfagency/ssh-port-forward-action@v1.0.0
       with:
-        workload_identity_provider: 'projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider'
-        service_account: 'my-service-account@my-project.iam.gserviceaccount.com'
-
-    - uses: wagnerpereira/gce-cloudsql-proxy-action@v2
-      with:
-        instance: my-project:us-central1:instance-1
+        ssh-key: ${{ secrets.SSH_KEY }}
+        ssh-host: your-host.com
+        ssh-port: 22
+        ssh-user: username
+        local-port: 6379
+        remote-host: localhost
+        remote-port: 6379
+        
+    - run: 'redis-cli -p 6379 ping'
 ```
 

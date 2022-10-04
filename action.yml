@@ -1,45 +1,54 @@
-name: 'Google Cloud SQL Proxy with workload identity'
-description: 'Start Google CloudSQL Proxy using Google Workload Identity Federation short-lived credentials'
+name: 'SSH port forwarding action'
+description: 'Forward a connection over SSH in the background'
 
 branding:
-  icon: 'database'
+  icon: 'corner-up-right'
   color: 'red'
 
 inputs:
-  creds:
-    description: 'Contents of a short-lived GOOGLE_APPLICATION_CREDENTIALS environment variable'
-    required: false
-  instance:
-    description: 'CloudSQL instance'
+  ssh-key:
+    description: 'SSH private key'
     required: true
-  port:
-    description: 'Listen on port'
+  ssh-host:
+    description: 'SSH host'
+    required: true
+  ssh-port:
+    description: 'SSH port'
     required: false
-    default: 5432
-  proxy_version:
-    description: 'CloudSQL Proxy Version'
-    required: false
-    default: v1.29.0
+    default: '22'
+  ssh-user:
+    description: 'SSH user'
+    required: true
+  remote-host:
+    description: 'Remote host'
+    required: true
+  remote-port:
+    description: 'Remote port'
+    required: true
+  local-port:
+    description: 'Local port'
+    required: true
 
 runs:
   using: 'composite'
   steps:
-    - name: Start Google Cloud SQL Proxy
+    - name: Start SSH port forwarding
       shell: bash
       run: |
-        # Download Linux binary
-        wget https://dl.google.com/cloudsql/cloud_sql_proxy.linux.amd64 -O cloud_sql_proxy        
-        chmod +x cloud_sql_proxy
-
-        # Start Cloud SQL Proxy
-        ./cloud_sql_proxy -instances=${{ inputs.instance }}=tcp:127.0.0.1:${{ inputs.port }} &
+        # Add SSH key
+        mkdir -p ~/.ssh
+        echo "${{ inputs.ssh-key }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        
+        # Start SSH forwarder
+        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -N -L ${{ inputs.local-port }}:${{ inputs.remote-host }}:${{ inputs.remote-port }} -p ${{ inputs.ssh-port }} ${{ inputs.ssh-user }}@${{ inputs.ssh-host }} &
 
         # wait until connections are accepted
         sleep 3
         isready=0
         for i in {1..10}; do
           echo "Wait for connections to be ready ... $i/10"
-          (${{ github.action_path }}/wait-for-it.sh --quiet --timeout=3 --host=127.0.0.1 --port=${{ inputs.port }} || exit $?) && true # escape bash's pipefail
+          (${{ github.action_path }}/wait-for-it.sh --quiet --timeout=3 --host=127.0.0.1 --port=${{ inputs.local-port }} || exit $?) && true # escape bash's pipefail
           isready=$?
           if [[ $isready -eq 0 ]]; then
             break
