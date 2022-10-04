@@ -32,13 +32,26 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Add SSH key
+    - name: Write SSH key to file
+      uses: 'actions/github-script@v6'
+      with:
+        script: |
+          const {writeFile} = require('fs').promises;
+          const {join} = require('path');
+          
+          try {
+            const key = core.getInput('ssh-key');
+            await writeFile('user_key', key, 'utf8');
+          } catch (error) {
+            core.setFailed(error.message);
+          }
+
+    - name: Validate SSH key
       shell: bash
       run: |
         # Add SSH key
-        echo "${{ inputs.ssh-key }}" | tee user_key
-        ssh-keygen -l -f user_key
         chmod 400 user_key
+        ssh-keygen -l -f user_key
 
     - name: Start SSH port forwarding
       shell: bash
