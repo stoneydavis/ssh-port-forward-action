@@ -41,7 +41,7 @@ runs:
           
           try {
             const key = core.getInput('ssh-key');
-            await writeFile('user_key', key, 'utf8');
+            await writeFile('user_key', key, { encoding: 'utf8', mode: 0o400 });
           } catch (error) {
             core.setFailed(error.message);
           }
@@ -49,9 +49,7 @@ runs:
     - name: Validate SSH key
       shell: bash
       run: |
-        # Add SSH key
-        chmod 400 user_key
-        ssh-keygen -l -f user_key
+        ssh-keygen -y -e -f user_key
 
     - name: Start SSH port forwarding
       shell: bash
