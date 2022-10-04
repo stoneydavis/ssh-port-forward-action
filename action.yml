@@ -37,11 +37,11 @@ runs:
       run: |
         # Add SSH key
         mkdir -p ~/.ssh
-        echo "${{ inputs.ssh-key }}" > ~/.ssh/id_rsa
-        chmod 400 ~/.ssh/id_rsa
+        printf "${{ inputs.ssh-key }}" > ~/.ssh/user_key
+        chmod 400 ~/.ssh/user_key
         
         # Start SSH forwarder
-        ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -N -L ${{ inputs.local-port }}:${{ inputs.remote-host }}:${{ inputs.remote-port }} -p ${{ inputs.ssh-port }} ${{ inputs.ssh-user }}@${{ inputs.ssh-host }} &
+        ssh -i ~/.ssh/user_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -N -L ${{ inputs.local-port }}:${{ inputs.remote-host }}:${{ inputs.remote-port }} -p ${{ inputs.ssh-port }} ${{ inputs.ssh-user }}@${{ inputs.ssh-host }} &
 
         # wait until connections are accepted
         sleep 3
