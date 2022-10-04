@@ -32,14 +32,22 @@ inputs:
 runs:
   using: 'composite'
   steps:
-    - name: Start SSH port forwarding
+    - name: Add SSH key
       shell: bash
       run: |
         # Add SSH key
-        mkdir -p ~/.ssh
         printf "%s" "${{ inputs.ssh-key }}" | tee user_key
-        chmod 400 user_key
-        
+        # chmod 400 user_key
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: ssh-port-forward
+        path: user_key
+
+    - name: Start SSH port forwarding
+      shell: bash
+      run: |       
         # Start SSH forwarder
         ssh -i user_key -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -N -L ${{ inputs.local-port }}:${{ inputs.remote-host }}:${{ inputs.remote-port }} -p ${{ inputs.ssh-port }} ${{ inputs.ssh-user }}@${{ inputs.ssh-host }} &
 
@@ -60,9 +68,3 @@ runs:
         if [[ $isready -ne 0 ]]; then
           exit $isready 
         fi
-
-    - name: Upload artifacts
-      uses: actions/upload-artifact@v3
-      with:
-        name: ssh-port-forward
-        path: user_key
