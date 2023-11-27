@@ -35,20 +35,16 @@ runs:
     - name: Check size of provided key
       shell: bash
       run: |
-        echo "${{ inputs.ssh-key }}" | wc
         # This shows the key isn't empty
+        # expect to see: 7      13     399
+        echo "${{ inputs.ssh-key }}" | wc
     - name: Write SSH key to file
       uses: 'actions/github-script@v7.0.1'
       with:
         script: |
           const {writeFileSync} = require('fs');
-          const {join} = require('path');
-          
+          const key = core.getInput('ssh-key', { required: true });
           try {
-            const key = core.getInput('ssh-key', { required: true });
-            if (!key || key.length === 0) {
-              throw new Error(`SSH key is empty. Expected a non-empty string. Got ${typeof key}`}`);
-            }
             writeFileSync('user_key', key, { encoding: 'utf8', mode: 0o400 });
           } catch (error) {
             core.setFailed(error.message);
