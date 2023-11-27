@@ -11,13 +11,13 @@ You must have a passwordless SSH key set up on the remote server.
 
 | Variable      | Description     |
 |---------------|-----------------|
-| `ssh-key`     | SSH private key |
-| `ssh-host`    | SSH host        |
-| `ssh-port`    | SSH port        |
-| `ssh-user`    | SSH user        |
-| `local-port`  | Local port      |
-| `remote-host` | Remote host     |
-| `remote-port` | Remote port     |
+| `ssh_key`     | SSH private key |
+| `ssh_host`    | SSH host        |
+| `ssh_port`    | SSH port        |
+| `ssh_user`    | SSH user        |
+| `local_port`  | Local port      |
+| `remote_host` | Remote host     |
+| `remote_port` | Remote port     |
 
 ## Example Usage
 
@@ -25,17 +25,17 @@ You must have a passwordless SSH key set up on the remote server.
 jobs:
   job_id:
     steps:
-    - uses: 'actions/checkout@v3'
+    - uses: 'actions/checkout@v4'
 
-    - uses: selfagency/ssh-port-forward-action@v1.0.5
+    - uses: stoneydavis/ssh-port-forward-action@v1.0.0
       with:
-        ssh-key: ${{ secrets.SSH_KEY }}
-        ssh-host: your-host.com
-        ssh-port: 22
-        ssh-user: username
-        local-port: 6379
-        remote-host: localhost
-        remote-port: 6379
+        ssh_key: ${{ secrets.SSH_KEY }}
+        ssh_host: your-host.com
+        ssh_port: 22
+        ssh_user: username
+        local_port: 6379
+        remote_host: localhost
+        remote_port: 6379
         
     - run: 'redis-cli -p 6379 ping'
 ```

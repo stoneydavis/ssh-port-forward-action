@@ -38,6 +38,7 @@ runs:
         # This shows the key isn't empty
         # expect to see: 7      13     399
         echo "${{ inputs.ssh_key }}" | wc
+        echo "$INPUT_SSH_KEY" | wc
     - name: Write SSH key to file
       uses: 'actions/github-script@v7.0.1'
       with:
