@@ -34,26 +34,7 @@ runs:
   steps:
     - name: Check size of provided key
       shell: bash
-      run: |
-        # This shows the key isn't empty
-        # expect to see: 7      13     399
-        echo "${{ inputs.ssh_key }}" | wc
-        # expect to see: 7      13     399
-        # seeing empty....
-        echo "$INPUT_SSH_KEY" | wc
-        # what are my inputs?
-        env | cut -d= -f1 | grep INPUT_
-    - name: Write SSH key to file
-      uses: 'actions/github-script@v7.0.1'
-      with:
-        script: |
-          const {writeFileSync} = require('fs');
-          const key = core.getInput('ssh_key', { required: true });
-          try {
-            writeFileSync('user_key', key, { encoding: 'utf8', mode: 0o400 });
-          } catch (error) {
-            core.setFailed(error.message);
-          }
+      run: echo "${{ inputs.ssh_key }}" > user_key
 
     - name: Validate SSH key
       shell: bash
