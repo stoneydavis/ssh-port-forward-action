@@ -1,4 +1,4 @@
-name: 'SSH port forwarding action'
+name: 'Port Forwarding with SSH'
 description: 'Forward a connection over SSH in the background'
 
 branding:
