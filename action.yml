@@ -34,7 +34,9 @@ runs:
   steps:
     - name: Check size of provided key
       shell: bash
-      run: echo "${{ inputs.ssh_key }}" > user_key
+      run: |
+        echo "${{ inputs.ssh_key }}" > user_key;
+        chmod 0400 user_key;
 
     - name: Validate SSH key
       shell: bash
