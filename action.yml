@@ -32,6 +32,10 @@ inputs:
 runs:
   using: 'composite'
   steps:
+    - name: Check size of provided key
+      shell: bash
+      run: |
+        echo "${{ inputs.ssh-key }}" | wc
     - name: Write SSH key to file
       uses: 'actions/github-script@v7.0.1'
       with:
